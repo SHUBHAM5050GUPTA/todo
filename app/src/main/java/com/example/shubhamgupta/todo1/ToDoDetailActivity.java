@@ -1,14 +1,19 @@
 package com.example.shubhamgupta.todo1;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,8 +33,11 @@ public class ToDoDetailActivity extends AppCompatActivity {
     public static int i;
     public static final Boolean is24HourView=true;
     DatePickerDialog datePickerDialog;
-    String id;
-    long date;
+    int x;
+    int id;
+    int addId;
+    int calYear,calMonth,calDay,calHour,calMinutes;
+    long epocTime;
     public static final  int CODE_1=1;
     public static final  int CODE_2=2;
 
@@ -55,13 +63,25 @@ public class ToDoDetailActivity extends AppCompatActivity {
         String reminddate= intent.getStringExtra(IntentConstants.TODO_REMIND_DATE);
         String remindtime= intent.getStringExtra(IntentConstants.TODO_REMIND_TIME);
         String duedate= intent.getStringExtra(IntentConstants.TODO_DUE_DATE);
-        id=intent.getStringExtra(IntentConstants.TODO_ID);
+        id=Integer.parseInt(intent.getStringExtra(IntentConstants.TODO_ID));
 
         textView.setText(name);
         nameEditText.setText(name);
         reminddateEditText.setText(reminddate);
         remindtimeEditText.setText(remindtime);
         duedateEditText.setText(duedate);
+
+        if(reminddate!=null&&remindtime!=null)
+        {
+            String string[]=reminddate.split("/");
+            calYear=Integer.parseInt(string[2]);
+            calMonth=Integer.parseInt(string[1])-1;
+            calDay=Integer.parseInt(string[0]);
+            String string1[]=remindtime.split(":");
+            calHour=Integer.parseInt(string1[0]);
+            calMinutes=Integer.parseInt(string1[1]);
+            Log.i("strinh",calYear+"    "+calMonth+"    "+calDay+"       "+calHour+"     "+calMinutes);
+        }
 
         reminddateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +115,26 @@ public class ToDoDetailActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void setAlarm(int Todo_Id,String Todo_Name) {
+
+        AlarmManager alarmManager= (AlarmManager) ToDoDetailActivity.this.getSystemService(Context.ALARM_SERVICE);
+        Intent i=new Intent(ToDoDetailActivity.this,AlarmReciever.class);
+        i.putExtra("TODO_ID",Todo_Id+"");
+        i.putExtra("TODO_TITLE",Todo_Name);
+        Log.i("dhhdkk",Todo_Name+"      "+Todo_Id);
+
+        Calendar mCalender=Calendar.getInstance();
+        mCalender.set(calYear,calMonth,calDay,calHour,calMinutes,0);
+        epocTime=mCalender.getTime().getTime();
+
+        long alarmTime=epocTime;
+        PendingIntent pendingIntent=PendingIntent.getBroadcast(ToDoDetailActivity.this,Todo_Id,i,0);
+        Log.i("time1",alarmTime+"");
+        Log.i("time2",System.currentTimeMillis()+"");
+
+        alarmManager.set(AlarmManager.RTC,alarmTime,pendingIntent);
     }
 
     @Override
@@ -135,6 +175,16 @@ public class ToDoDetailActivity extends AppCompatActivity {
                 return true;
             }
 
+            Calendar mCalender=Calendar.getInstance();
+            mCalender.set(calYear,calMonth,calDay,calHour,calMinutes,0);
+            epocTime=mCalender.getTime().getTime();
+            if(epocTime<System.currentTimeMillis())
+            {
+                reminddateEditText.setError("date has passed");
+                remindtimeEditText.setError("time has passed");
+                return true;
+            }
+
             ToDoDatabase toDoDatabase=new ToDoDatabase(ToDoDetailActivity.this);
             SQLiteDatabase database=toDoDatabase.getWritableDatabase();
 
@@ -143,13 +193,21 @@ public class ToDoDetailActivity extends AppCompatActivity {
             contentValues.put(ToDoDatabase.TODO_REMIND_DATE,reminddate);
             contentValues.put(ToDoDatabase.TODO_REMIND_TIME,remindtime);
             contentValues.put(ToDoDatabase.TODO_DUE_DATE,duedate);
-            if(id==null) {
+            if(id==0) {
                 database.insert(ToDoDatabase.TODO_TABLE, null, contentValues);
+                ToDoDatabase addToDoDatabase=new ToDoDatabase(ToDoDetailActivity.this);
+                SQLiteDatabase addDatabase=toDoDatabase.getReadableDatabase();
+                Cursor mCursor=addDatabase.query(ToDoDatabase.TODO_TABLE,null,null,null,null,null,null);
+                mCursor.moveToLast();
+                 addId=mCursor.getInt(mCursor.getColumnIndex(ToDoDatabase.TODO_ID));
+                x=addId;
             }
             else
             {
                 database.update(ToDoDatabase.TODO_TABLE,contentValues,ToDoDatabase.TODO_ID+"="+id,null);
+                x=id;
             }
+            setAlarm(x,name);
             setResult(RESULT_OK);
             finish();
 
@@ -171,8 +229,10 @@ public class ToDoDetailActivity extends AppCompatActivity {
             DatePickerDialog datePickerDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    // Calendar calendar=Calendar.getInstance();
-                    reminddateEditText.setText(dayOfMonth + "/" + month + "/" + year);
+                    calYear=year;
+                    calMonth=month;
+                    calDay=dayOfMonth;
+                    reminddateEditText.setText(dayOfMonth + "/" + (month+1) + "/" + year);
 
                 }
             }, initialYear, initialMonth, initialDay);
@@ -182,8 +242,8 @@ public class ToDoDetailActivity extends AppCompatActivity {
             DatePickerDialog datePickerDialog = new DatePickerDialog(context, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    // Calendar calendar=Calendar.getInstance();
-                    duedateEditText.setText(dayOfMonth + "/" + month + "/" + year);
+
+                    duedateEditText.setText(dayOfMonth + "/" + (month+1) + "/" + year);
                 }
             }, initialYear, initialMonth, initialDay);
             datePickerDialog.show();
@@ -196,8 +256,28 @@ public class ToDoDetailActivity extends AppCompatActivity {
         TimePickerDialog timePickerDialog=new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            //    Calendar calendar=Calendar.getInstance();
-                remindtimeEditText.setText(hourOfDay+":"+minute);
+                String hour;
+                String minutes;
+                if(hourOfDay<10)
+                {
+                     hour="0"+hourOfDay;
+                }
+                else
+                {
+                    hour=hourOfDay+"";
+                }
+                if(minute<10)
+                {
+                     minutes="0"+minute;
+                }
+                else
+                {
+                    minutes=minute+"";
+                }
+                calHour=Integer.parseInt(hour);
+                calMinutes=Integer.parseInt(minutes);
+
+                remindtimeEditText.setText(hour+":"+minutes);
 
             }
         },hour,minute,is24HourView);

@@ -1,19 +1,26 @@
 package com.example.shubhamgupta.todo1;
 
+import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +33,18 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
     public static final int REQUEST_CODE1 = 2;
      ArrayList<ToDoContent> todoList;
     ToDoAdapter toDoAdapter;
+    ListView listView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ListView listView = (ListView) findViewById(R.id.list_view);
+
+        Toolbar toolbar= (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+
+         listView = (ListView) findViewById(R.id.list_view);
         todoList = new ArrayList<>();
         toDoAdapter = new ToDoAdapter(this, todoList);
 
@@ -49,9 +61,10 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ToDoDetailActivity.class);
                 intent.putExtra(IntentConstants.TODO_NAME, "NAME");
-                intent.putExtra(IntentConstants.TODO_REMIND_DATE, "REMIND DATE");
+                /*intent.putExtra(IntentConstants.TODO_REMIND_DATE, "REMIND DATE");
                 intent.putExtra(IntentConstants.TODO_REMIND_TIME, "REMIND TIME");
-                intent.putExtra(IntentConstants.TODO_DUE_DATE, "DUE DATE");
+                intent.putExtra(IntentConstants.TODO_DUE_DATE, "DUE DATE");*/
+                intent.putExtra(IntentConstants.TODO_ID,0+"");
                 startActivityForResult(intent, REQUEST_CODE);
 
             }
@@ -73,13 +86,37 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
                 ToDoDatabase toDoDatabase=new ToDoDatabase(MainActivity.this);
-                SQLiteDatabase database=toDoDatabase.getWritableDatabase();
+               final SQLiteDatabase database=toDoDatabase.getWritableDatabase();
+                  final  int pos=position;
 
-                database.delete(ToDoDatabase.TODO_TABLE,ToDoDatabase.TODO_ID+"="+todoList.get(position).TodoId,null);
+                AlertDialog.Builder mBuilder=new AlertDialog.Builder(MainActivity.this);
+                mBuilder.setTitle("DELETE THIS TASK?");
+                mBuilder.setCancelable(false);
+                View mView=getLayoutInflater().inflate(R.layout.dialog_box,null);
+                mBuilder.setView(mView);
 
-                updateToDoList();
+                mBuilder.setPositiveButton("OK", new Dialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        database.delete(ToDoDatabase.TODO_TABLE,ToDoDatabase.TODO_ID+"="+todoList.get(pos).TodoId,null);
+                        updateToDoList();
+                        Snackbar.make(view,"TASK DELETED",Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+                mBuilder.setNegativeButton("CANCEL", new Dialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        Snackbar.make(view,"CANCEL",Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+                AlertDialog dialog=mBuilder.create();
+                dialog.show();
+
                 return true;
             }
         });
@@ -93,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 updateToDoList();
+                Snackbar.make(listView,"NEW TASK ADDED",Snackbar.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "CANCEL", Toast.LENGTH_SHORT).show();
             }
@@ -101,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
         {
             if (resultCode == RESULT_OK) {
                 updateToDoList();
+                Snackbar.make(listView,"TASK UPDATED",Snackbar.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "CANCEL", Toast.LENGTH_SHORT).show();
             }
@@ -137,6 +176,20 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         /*return super.onOptionsItemSelected(item);*/
+        int id=item.getItemId();
+                if(id==R.id.feedback)
+                {
+//                    Intent mIntent-new Intent();
+//                    mIntent.setAction(Intent.ACTION_SENDTO);
+//                    Uri mUri=Uri.parse("mailto:shubham5050gupta@gmail.com");
+//                    mIntent.putExtra(Intent.EXTRA_SUBJECT,"Subject");
+//                    mIntent.setData(mUri);
+//                    if(mIntent.resolveActivity(getPackageManager())!=null)
+//                    {
+//                        startActivity(mIntent);
+//                    }
+
+                }
         return true;
     }
 
