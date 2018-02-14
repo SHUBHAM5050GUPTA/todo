@@ -13,7 +13,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,14 +31,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity implements ToDoAdapter.OncheckboxClickListner {
 
     public static final int REQUEST_CODE = 1;
     public static final int REQUEST_CODE1 = 2;
-     ArrayList<ToDoContent> todoList;
+    /*ArrayList<ToDoContent> todoList;
     ToDoAdapter toDoAdapter;
-    ListView listView;
+    ListView listView;*/
+    ArrayList<Task> todoList;
+    RecyclerAdapter mRecyclerAdapter;
+    RecyclerView mRecyclerView;
 
 
     @Override
@@ -44,13 +53,41 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
         Toolbar toolbar= (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
 
-         listView = (ListView) findViewById(R.id.list_view);
-        todoList = new ArrayList<>();
-        toDoAdapter = new ToDoAdapter(this, todoList);
+//        listView = (ListView) findViewById(R.id.list_view);
+//        todoList = new ArrayList<>();
+//        toDoAdapter = new ToDoAdapter(this, todoList);
 
-        toDoAdapter.setOnCheckboxClickListner(this);
-        listView.setAdapter(toDoAdapter);
+        mRecyclerView= (RecyclerView) findViewById(R.id.task_recycle_view);
+        todoList=new ArrayList<>();
+        mRecyclerAdapter=new RecyclerAdapter(this,todoList, new RecyclerAdapter.TaskClickListner() {
+            @Override
+            public void OnItemClick(View view, int position) {
+
+                Intent intent = new Intent(MainActivity.this, ToDoDetailActivity.class);
+                intent.putExtra(IntentConstants.TODO_NAME,todoList.get(position).getTitle());
+                intent.putExtra(IntentConstants.TODO_REMIND_DATE,todoList.get(position).getRemindDate());
+                intent.putExtra(IntentConstants.TODO_REMIND_TIME,todoList.get(position).getRemindTime());
+                intent.putExtra(IntentConstants.TODO_DUE_DATE,todoList.get(position).getDueDate());
+                intent.putExtra(IntentConstants.TODO_DESCRIPTION,todoList.get(position).description);
+                intent.putExtra(IntentConstants.TODO_ID,todoList.get(position).getTaskId()+"");
+                startActivityForResult(intent, REQUEST_CODE1);
+            }
+
+            @Override
+            public void OnRemoveClick(int position) {
+
+            }
+        });
+
+
+        /*toDoAdapter.setOnCheckboxClickListner(this);
+        listView.setAdapter(toDoAdapter);*/
         updateToDoList();
+
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
 
@@ -71,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
         });
 
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, ToDoDetailActivity.class);
@@ -82,9 +119,9 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
                 intent.putExtra(IntentConstants.TODO_ID,todoList.get(position).TodoId+"");
                 startActivityForResult(intent, REQUEST_CODE1);
             }
-        });
+        });*/
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, int position, long id) {
                 ToDoDatabase toDoDatabase=new ToDoDatabase(MainActivity.this);
@@ -119,7 +156,58 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
 
                 return true;
             }
+        });*/
+
+
+        ItemTouchHelper itemTouchHelper=new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.UP | ItemTouchHelper.DOWN ,ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                int from=viewHolder.getAdapterPosition();
+                int to=target.getAdapterPosition();
+                Collections.swap(todoList,from,to);
+                mRecyclerAdapter.notifyItemMoved(from,to);
+                return true;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+                ToDoDatabase toDoDatabase=new ToDoDatabase(MainActivity.this);
+                final SQLiteDatabase database=toDoDatabase.getWritableDatabase();
+                final int postion =viewHolder.getAdapterPosition();
+
+                AlertDialog.Builder mBuilder=new AlertDialog.Builder(MainActivity.this);
+                mBuilder.setTitle("DELETE THIS TASK?");
+                mBuilder.setCancelable(false);
+                View mView=getLayoutInflater().inflate(R.layout.dialog_box,null);
+                mBuilder.setView(mView);
+
+                mBuilder.setPositiveButton("OK", new Dialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        database.delete(ToDoDatabase.TODO_TABLE,ToDoDatabase.TODO_ID+"="+todoList.get(postion).getTaskId(),null);
+                        updateToDoList();
+                        Snackbar.make(mRecyclerView,"TASK DELETED",Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+                mBuilder.setNegativeButton("CANCEL", new Dialog.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        updateToDoList();
+                        Snackbar.make(mRecyclerView,"CANCEL",Snackbar.LENGTH_LONG).show();
+                    }
+                });
+
+                AlertDialog dialog=mBuilder.create();
+                dialog.show();
+
+            }
         });
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
 
 
     }
@@ -130,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 updateToDoList();
-                Snackbar.make(listView,"NEW TASK ADDED",Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mRecyclerView,"NEW TASK ADDED",Snackbar.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "CANCEL", Toast.LENGTH_SHORT).show();
             }
@@ -139,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
         {
             if (resultCode == RESULT_OK) {
                 updateToDoList();
-                Snackbar.make(listView,"TASK UPDATED",Snackbar.LENGTH_LONG).show();
+                Snackbar.make(mRecyclerView,"TASK UPDATED",Snackbar.LENGTH_LONG).show();
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "CANCEL", Toast.LENGTH_SHORT).show();
             }
@@ -157,12 +245,14 @@ public class MainActivity extends AppCompatActivity implements ToDoAdapter.Onche
             String remindadate = cursor.getString(cursor.getColumnIndex(ToDoDatabase.TODO_REMIND_DATE));
             String remindtime = cursor.getString(cursor.getColumnIndex(ToDoDatabase.TODO_REMIND_TIME));
             String duedate = cursor.getString(cursor.getColumnIndex(ToDoDatabase.TODO_DUE_DATE));
+            String description=cursor.getString(cursor.getColumnIndex(ToDoDatabase.TODO_DESCRIPTION));
+            String image=cursor.getString(cursor.getColumnIndex(ToDoDatabase.TODO_IMAGE));
             int id = cursor.getInt(cursor.getColumnIndex(ToDoDatabase.TODO_ID));
-            ToDoContent toDoContent = new ToDoContent(id, name, remindadate, remindtime, duedate);
-            todoList.add(toDoContent);
+            Task mTask = new Task(id, name,description, remindadate, remindtime, duedate,image);
+            todoList.add(mTask);
 
         }
-        toDoAdapter.notifyDataSetChanged();
+        mRecyclerAdapter.notifyDataSetChanged();
     }
 
 

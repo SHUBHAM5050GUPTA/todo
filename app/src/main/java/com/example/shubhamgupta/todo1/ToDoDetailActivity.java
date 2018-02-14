@@ -30,6 +30,7 @@ public class ToDoDetailActivity extends AppCompatActivity {
     EditText duedateEditText;
     EditText remindtimeEditText;
     TextView textView;
+    EditText descriptionEditText;
     public static int i;
     public static final Boolean is24HourView=true;
     DatePickerDialog datePickerDialog;
@@ -58,11 +59,14 @@ public class ToDoDetailActivity extends AppCompatActivity {
         duedateEditText= (EditText) findViewById(R.id.tododetail_edittext4);
        // duedateEditText.setInputType(InputType.TYPE_NULL);
 
+        descriptionEditText= (EditText) findViewById(R.id.todo_detail);
+
         Intent intent=getIntent();
         String name= intent.getStringExtra(IntentConstants.TODO_NAME);
         String reminddate= intent.getStringExtra(IntentConstants.TODO_REMIND_DATE);
         String remindtime= intent.getStringExtra(IntentConstants.TODO_REMIND_TIME);
         String duedate= intent.getStringExtra(IntentConstants.TODO_DUE_DATE);
+        String description=intent.getStringExtra(IntentConstants.TODO_DESCRIPTION);
         id=Integer.parseInt(intent.getStringExtra(IntentConstants.TODO_ID));
 
         textView.setText(name);
@@ -70,6 +74,7 @@ public class ToDoDetailActivity extends AppCompatActivity {
         reminddateEditText.setText(reminddate);
         remindtimeEditText.setText(remindtime);
         duedateEditText.setText(duedate);
+        descriptionEditText.setText(description);
 
         if(reminddate!=null&&remindtime!=null)
         {
@@ -153,6 +158,7 @@ public class ToDoDetailActivity extends AppCompatActivity {
             String reminddate=reminddateEditText.getText().toString();
             String remindtime=remindtimeEditText.getText().toString();
             String duedate=duedateEditText.getText().toString();
+            String description=descriptionEditText.getText().toString();
 
             if(name.trim().equalsIgnoreCase(""))
             {
@@ -175,6 +181,12 @@ public class ToDoDetailActivity extends AppCompatActivity {
                 return true;
             }
 
+            if(description.trim().equalsIgnoreCase(""))
+            {
+                descriptionEditText.setError("this field cant be empty");
+                return true;
+            }
+
             Calendar mCalender=Calendar.getInstance();
             mCalender.set(calYear,calMonth,calDay,calHour,calMinutes,0);
             epocTime=mCalender.getTime().getTime();
@@ -193,6 +205,8 @@ public class ToDoDetailActivity extends AppCompatActivity {
             contentValues.put(ToDoDatabase.TODO_REMIND_DATE,reminddate);
             contentValues.put(ToDoDatabase.TODO_REMIND_TIME,remindtime);
             contentValues.put(ToDoDatabase.TODO_DUE_DATE,duedate);
+            contentValues.put(ToDoDatabase.TODO_DESCRIPTION,description);
+            contentValues.put(ToDoDatabase.TODO_IMAGE,ToDoDatabase.TODO_DESCRIPTION);
             if(id==0) {
                 database.insert(ToDoDatabase.TODO_TABLE, null, contentValues);
                 ToDoDatabase addToDoDatabase=new ToDoDatabase(ToDoDetailActivity.this);

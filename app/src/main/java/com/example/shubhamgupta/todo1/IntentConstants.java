@@ -11,5 +11,6 @@ public class IntentConstants {
     public static final String TODO_REMIND_DATE="remind_date";
     public static final String TODO_REMIND_TIME="remind_time";
     public static final String TODO_DUE_DATE="due_date";
+    public static final String TODO_DESCRIPTION="description";
 
 }

@@ -12,9 +12,11 @@ public class ToDoDatabase extends SQLiteOpenHelper {
 
     public static final String TODO_TABLE="Todo";
     public static final String TODO_NAME="Name";
+    public static final String TODO_DESCRIPTION="Description";
     public static final String TODO_REMIND_DATE="Reminddate";
     public static final String TODO_REMIND_TIME="Remindtime";
     public static final String TODO_DUE_DATE="Duedate";
+    public  static final String TODO_IMAGE="Image";
     public static final String TODO_ID="Id";
 
 
@@ -26,7 +28,8 @@ public class ToDoDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String query="CREATE TABLE "+TODO_TABLE+" ("+TODO_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "+TODO_NAME+" TEXT, "
-                +TODO_REMIND_DATE+" TEXT, "+TODO_REMIND_TIME+" TEXT, "+TODO_DUE_DATE+" TEXT "+");";
+                +TODO_DESCRIPTION+" TEXT, "+TODO_REMIND_DATE+" TEXT, "+TODO_REMIND_TIME+" TEXT, "+TODO_DUE_DATE+" TEXT ,"
+                +TODO_IMAGE+" TEXT "+");";
         db.execSQL(query);
     }
 

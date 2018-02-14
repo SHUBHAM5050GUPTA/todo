@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#FF9800</color>
+    <color name="colorPrimaryDark">#F57C00</color>
     <color name="colorAccent">#FF4081</color>
     <color name="purple700">#7B1FA2</color>
     <color name="purple500">#9C27B0</color>
@@ -12,6 +12,12 @@
     <color name="red500">#F44336</color>
     <color name="green">#4CAF50</color>
     <color name="black800">#424242</color>
+    <color name="amber700">#FFA000</color>
+    <color name="amber500">#FFC107</color>
+    <color name="indigo500">#3F51B5</color>
+    <color name="indigo400">#5C6BC0</color>
+
+
 
 
 

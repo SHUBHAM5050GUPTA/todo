@@ -1,153 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_to_do_detail"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:orientation="vertical" android:layout_width="match_parent"
+android:layout_height="match_parent">
+<ImageView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.shubhamgupta.todo1.ToDoDetailActivity">
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/bookmarkcheck"
-            android:tint="@color/purple500"
-            android:paddingTop="5dp"
-            android:id="@+id/image1"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tododetail_textview1"
-        android:layout_weight="5"
-        android:padding="10dp"
-        android:textColor="@color/purple500"
-        android:textSize="30dp"
-        /></LinearLayout></android.support.v7.widget.CardView>
+    android:src="@drawable/yellow_triangles"
+    android:scaleType="centerCrop"/>
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:text="@string/app_name"
+    android:id="@+id/tododetail_textview1"
+    />
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/tododetail_textview1">
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:src="@drawable/tasks"
-        android:tint="@color/secondaryGreen"
-        android:id="@+id/imageView1"
-        android:padding="10dp"/>
-    <EditText
-        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:id="@+id/tododetail_edittext1"
-        android:layout_weight="5"/></LinearLayout></android.support.v7.widget.CardView>
+        android:background="@drawable/trans_background"
+        android:orientation="vertical"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        >
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="5dp"
-            android:src="@drawable/datefrom"
-            android:tint="@color/secondaryGreen"
-            android:id="@+id/imageView2">
-        </ImageView>
-    <EditText
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:focusable="false"
-        android:id="@+id/tododetail_edittext2"/></LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="0dp"
+            android:text="Get Started"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:paddingStart="10dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="10dp"
+            android:layout_marginBottom="5dp"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@drawable/alarm"
-            android:padding="10dp"
-            android:tint="@color/secondaryGreen"
-            android:id="@+id/imageView3"></ImageView>
-    <EditText
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:focusable="false"
-        android:paddingTop="20dp"
-        android:id="@+id/tododetail_edittext3"/></LinearLayout></LinearLayout></android.support.v7.widget.CardView>
+            android:text="Just few details to get you started"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:layout_marginBottom="30dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="5dp"
-            android:src="@drawable/datefrom"
-            android:tint="@color/secondaryGreen"
-            android:id="@+id/imageView4"></ImageView>
-    <EditText
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="5"
-        android:focusable="false"
-        android:id="@+id/tododetail_edittext4"/></LinearLayout></android.support.v7.widget.CardView>
+            />
 
-    <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tododetail_textview2"/></android.support.v7.widget.CardView>
+        <!--color of icon is #6d6d6d-->
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/tododetail_edittext1"
+            android:hint="Title"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/rounded_corner"
+            android:drawableLeft="@drawable/title"
+            android:textSize="14sp"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:layout_marginBottom="10dp">
+        </EditText>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/tododetail_edittext2"
+            android:hint="Remind Date"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/rounded_corner"
+            android:drawableLeft="@drawable/ic_icon_password"
+            android:textSize="14sp"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:layout_marginBottom="10dp">
+        </EditText>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/tododetail_edittext3"
+            android:hint="Remind Time"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/rounded_corner"
+            android:drawableLeft="@drawable/ic_icon_confirm_password"
+            android:textSize="14sp"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:layout_marginBottom="10dp">
+        </EditText>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/tododetail_edittext4"
+            android:hint="Remind Time"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/rounded_corner"
+            android:drawableLeft="@drawable/ic_icon_confirm_password"
+            android:textSize="14sp"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:layout_marginBottom="10dp">
+        </EditText>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:id="@+id/todo_detail"
+            android:hint="Remind Time"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:background="@drawable/rounded_corner"
+            android:drawableLeft="@drawable/ic_icon_confirm_password"
+            android:textSize="14sp"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:layout_marginBottom="10dp">
+        </EditText>
+
+    </LinearLayout>
+
+</ScrollView>
+</RelativeLayout>
 
 
-</LinearLayout>
+
