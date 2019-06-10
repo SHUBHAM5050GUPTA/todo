@@ -1,5 +1,5 @@
-# todo
-
+# Task Manager
+# Screenshots of Application
 <img src="https://user-images.githubusercontent.com/29982397/59182681-f6dc7680-8b87-11e9-9d37-6c0e52e61122.png" height=500 width=300>
 <img src="https://user-images.githubusercontent.com/29982397/59184420-ba127e80-8b8b-11e9-84dd-2521818a4f5b.png" height=500 width=300>
 <img src="https://user-images.githubusercontent.com/29982397/59184422-ba127e80-8b8b-11e9-91f4-83eca4b340db.png" height=500 width=300>
